@@ -11,7 +11,7 @@ const testSchema1 = require("./__mock__/testSchema1");
 
 const testCases = [
     {
-        name: "response from request",
+        name: "response from valid request 1",
         url: "/graphql",
         query: "{ foo }",
         variables: "",
@@ -19,15 +19,138 @@ const testCases = [
             foo: "hello world",
         },
     },
+    {
+        name: "response from valid request 2",
+        url: "/graphql",
+        query: "{ foo }",
+        variables: "{ a: 1 }",
+        expected: {
+            foo: "hello world",
+        },
+    },
 ];
 
-const fastify = Fastify();
+const invalidDataTestCases = [
+    {
+        name: "response from invalid request 1",
+        url: "/graphql",
+        query: "{ foo ",
+        variables: "",
+    },
+    {
+        name: "response from invalid request 2",
+        url: "/graphql",
+        query: null,
+        variables: "",
+    },
+    {
+        name: "response from invalid request 3",
+        url: "/graphql",
+        query: null,
+        variables: "asfasf",
+    },
+]
 
-fastify.listen(process.env.PORT || 5000, "0.0.0.0");
+test("Initialization with good params", async t => {
+    const fastify = Fastify();
+    try {
+        fastify.register(plugin, {
+            query: {
+                schema: testSchema1,
+                graphiql: true,
+            },
+            route: {
+                path: "/graphql",
+            }
+        })
+        await fastify.listen();
+        t.pass("server initialized")
+    } catch (err) {
+        t.error(err);
+    }
+    fastify.server.unref();
+});
 
-test("response from request", t => {
-    t.plan(testCases.length);
+test("Initialization with good params", async t => {
+    const fastify = Fastify();
+    try {
+        fastify.register(plugin, {
+            query: {
+                schema: testSchema1,
+                graphiql: false,
+            },
+            route: {
+                path: "/graphql",
+            }
+        })
+        await fastify.listen();
+        t.pass("server initialized")
+    } catch (err) {
+        t.error(err);
+    }
+    fastify.server.unref();
+});
 
+test("Initialization with no options", async t => {
+    const fastify = Fastify();
+    try {
+        await fastify.register(plugin);
+        await fastify.listen();
+    } catch (err) {
+        t.ok(err);
+        t.pass("Server uninitialized");
+    }
+    fastify.server.unref();
+});
+
+test("Initialization with invalid options", async t => {
+    const fastify = Fastify();
+    try {
+        await fastify.register(plugin, () => {});
+        await fastify.listen();
+    } catch (err) {
+        t.ok(err);
+        t.pass("Server uninitialized");
+    }
+    fastify.server.unref();
+});
+
+test("Initialization with no query", async t => {
+    const fastify = Fastify();
+    try {
+        await fastify.register(plugin, {
+            query: {
+                schema: testSchema1,
+                graphiql: true,
+            },
+        })
+        await fastify.listen();
+    } catch (err) {
+        t.ok(err);
+        t.pass("Server uninitialized");
+    }
+    fastify.server.unref();
+});
+
+test("Initialization with no route", async t => {
+    const fastify = Fastify();
+    try {
+        await fastify.register(plugin, {
+            route: {
+                path: "/graphql",
+            }
+        })
+        await fastify.listen();
+    } catch (err) {
+        t.ok(err);
+        t.pass("Server uninitialized");
+    }
+    fastify.server.unref();
+});
+
+
+test("Response from requests", t => {
+    t.plan(testCases.length + invalidDataTestCases.length + 1);
     const fastify = Fastify();
     fastify.register(plugin, {
         query: {
@@ -38,26 +161,33 @@ test("response from request", t => {
             path: "/graphql",
         },
     });
-
-    fastify.listen(0, function() {
+    fastify.listen(0, function(err) {
+        t.error(err);
         const BASE_URL = `http://localhost:${fastify.server.address().port}`;
-        const testRequests = [];
         testCases.forEach(function(testCase) {
             t.test(testCase.name, t => {
                 t.plan(1);
-                testRequests.push(
-                    request(`${BASE_URL}${testCase.url}`, testCase.query)
-                        .then(data => {
-                            t.strictSame(data, testCase.expected);
-                            t.end();
-                        })
-                        .catch(err => {
-                            t.error(err);
-                        })
-                );
+                request(`${BASE_URL}${testCase.url}`, testCase.query)
+                    .then(data => {
+                        t.strictSame(data, testCase.expected);
+                    })
+                    .catch(err => {
+                        t.error(err);
+                    });
             });
         });
-        Promise.all(testRequests).then(() => process.exit(1));
+        invalidDataTestCases.forEach(testCase => {
+            t.test(testCase.name, t => {
+                t.plan(1);
+                request(`${BASE_URL}${testCase.url}`, testCase.query)
+                    .then(data => {
+                        t.error(data)
+                    }).catch(() => {
+                        t.pass("error found")
+                    })
+            })
+        })
     });
+    t.tearDown(() => fastify.close());
     fastify.server.unref();
 });

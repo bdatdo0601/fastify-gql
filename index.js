@@ -238,12 +238,17 @@ const handler = (options = {}, logUtil) => async (request, reply) => {
  * Define plugin
  */
 function register(fastify, options = {}, next) {
-    const { route, query } = options;
+    let { route, query } = options;
     const logUtil = fastify.log;
 
-    if (!route || !query) {
-        logUtil.error("Invalid Configuration");
-        throw new Error("Route or Query not provided");
+    if (!route) {
+        // logUtil.error("Invalid Configuration");
+        // throw new Error("Route or Query not provided");
+        route = { path: "/graphql" }
+    }
+
+    if (!query) {
+       logUtil.error("Need schema");
     }
 
     fastify.route({
