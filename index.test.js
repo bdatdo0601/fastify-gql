@@ -49,7 +49,7 @@ const invalidDataTestCases = [
         query: null,
         variables: "asfasf",
     },
-]
+];
 
 test("Initialization with good params", async t => {
     const fastify = Fastify();
@@ -61,10 +61,10 @@ test("Initialization with good params", async t => {
             },
             route: {
                 path: "/graphql",
-            }
-        })
+            },
+        });
         await fastify.listen();
-        t.pass("server initialized")
+        t.pass("server initialized");
     } catch (err) {
         t.error(err);
     }
@@ -81,10 +81,10 @@ test("Initialization with good params", async t => {
             },
             route: {
                 path: "/graphql",
-            }
-        })
+            },
+        });
         await fastify.listen();
-        t.pass("server initialized")
+        t.pass("server initialized");
     } catch (err) {
         t.error(err);
     }
@@ -123,7 +123,7 @@ test("Initialization with no query", async t => {
                 schema: testSchema1,
                 graphiql: true,
             },
-        })
+        });
         await fastify.listen();
     } catch (err) {
         t.ok(err);
@@ -138,8 +138,8 @@ test("Initialization with no route", async t => {
         await fastify.register(plugin, {
             route: {
                 path: "/graphql",
-            }
-        })
+            },
+        });
         await fastify.listen();
     } catch (err) {
         t.ok(err);
@@ -147,7 +147,6 @@ test("Initialization with no route", async t => {
     }
     fastify.server.unref();
 });
-
 
 test("Response from requests", t => {
     t.plan(testCases.length + invalidDataTestCases.length + 1);
@@ -181,12 +180,13 @@ test("Response from requests", t => {
                 t.plan(1);
                 request(`${BASE_URL}${testCase.url}`, testCase.query)
                     .then(data => {
-                        t.error(data)
-                    }).catch(() => {
-                        t.pass("error found")
+                        t.error(data);
                     })
-            })
-        })
+                    .catch(() => {
+                        t.pass("error found");
+                    });
+            });
+        });
     });
     t.tearDown(() => fastify.close());
     fastify.server.unref();

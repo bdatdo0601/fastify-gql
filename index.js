@@ -244,11 +244,11 @@ function register(fastify, options = {}, next) {
     if (!route) {
         // logUtil.error("Invalid Configuration");
         // throw new Error("Route or Query not provided");
-        route = { path: "/graphql" }
+        route = { path: "/graphql" };
     }
 
     if (!query) {
-       logUtil.error("Need schema");
+        logUtil.error("Need schema");
     }
 
     fastify.route({
