@@ -8,7 +8,8 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "lint": "prettier --config ./.prettierrc ./*.js ./*.test.js --write",
+    "lint-override": "prettier --config ./.prettierrc ./*.js ./*.test.js --write",
+    "lint": "prettier --config ./.prettierrc ./*.js ./*.test.js",
     "unit": "tap index.test.js",
     "test": "npm run lint && npm run unit",
     "coverage": "tap index.test.js --cov --coverage-report=text-lcov --coverage-report=html"
