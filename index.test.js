@@ -1,5 +1,3 @@
-"use strict";
-
 const test = require("tap").test;
 
 const plugin = require("./");
