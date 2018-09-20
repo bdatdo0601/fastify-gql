@@ -1,0 +1,10 @@
+{
+  "name": "fastify-gql",
+  "version": "0.0.1",
+  "description": "GraphQL Plugins for Fastify",
+  "main": "index.js",
+  "repository": "git@github.com:bdatdo0601/fastify-gql.git",
+  "author": "Dat Do",
+  "license": "MIT",
+  "private": false
+}
