@@ -1,5 +1,5 @@
 {
-  "name": "fastify-gql",
+  "name": "fastify-gql-plugin",
   "version": "0.0.1",
   "description": "GraphQL Plugins for Fastify",
   "main": "index.js",
@@ -12,7 +12,6 @@
     "unit": "tap index.test.js",
     "test": "npm run lint && npm run unit",
     "coverage": "tap index.test.js --cov --coverage-report=text-lcov --coverage-report=html",
-    "coveralls": "tap index.test.js --cov --coverage-report=text-lcov | coveralls"
   },
   "devDependencies": {
     "coveralls": "^3.0.2",
