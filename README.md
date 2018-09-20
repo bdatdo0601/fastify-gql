@@ -1,4 +1,4 @@
-# fastify-gql
+# fastify-gql-plugin
 
 A GraphQL plugins based on [Hapi-graphql-2](https://github.com/skarpdev/hapi-graphql-2) and [Express-graphql](https://github.com/graphql/express-graphql)
 
@@ -7,12 +7,12 @@ A GraphQL plugins based on [Hapi-graphql-2](https://github.com/skarpdev/hapi-gra
 Using npm:
 
 ```bash
-npm i --save fastify-gql
+npm i --save fastify-gql-plugin
 ```
 
 Using yarn:
 ```bash
-yarn add fastify-gql
+yarn add fastify-gql-plugin
 ```
 
 # Usage
@@ -20,7 +20,7 @@ yarn add fastify-gql
 *Please checkout `__mock__` folder to have more info on schema*
 
 ```javascript
-const fastifyGQLPlugin = require("fastify-gql");
+const fastifyGQLPlugin = require("fastify-gql-plugin");
 const Fastify = require("fastify");
 
 /**....**/
