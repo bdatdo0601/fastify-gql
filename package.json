@@ -11,7 +11,7 @@
     "lint": "prettier --config ./.prettierrc ./*.js ./*.test.js --write",
     "unit": "tap index.test.js",
     "test": "npm run lint && npm run unit",
-    "coverage": "tap index.test.js --cov --coverage-report=text-lcov --coverage-report=html",
+    "coverage": "tap index.test.js --cov --coverage-report=text-lcov --coverage-report=html"
   },
   "devDependencies": {
     "coveralls": "^3.0.2",
