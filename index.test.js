@@ -7,7 +7,7 @@ const Fastify = require("fastify");
 
 const testSchema1 = require("./__mock__/testSchema1");
 
-const testCases = [
+const validDataTestCases = [
     {
         name: "response from valid request 1",
         url: "/graphql",
@@ -49,10 +49,10 @@ const invalidDataTestCases = [
     },
 ];
 
-test("Initialization with good params", async t => {
-    const fastify = Fastify();
-    try {
-        fastify.register(plugin, {
+const validOptions = [
+    {
+        name: "valid option with graphiql",
+        options: {
             query: {
                 schema: testSchema1,
                 graphiql: true,
@@ -60,94 +60,103 @@ test("Initialization with good params", async t => {
             route: {
                 path: "/graphql",
             },
-        });
-        await fastify.listen();
-        t.pass("server initialized");
-    } catch (err) {
-        t.error(err);
-    }
-    fastify.server.unref();
-});
-
-test("Initialization with good params", async t => {
-    const fastify = Fastify();
-    try {
-        fastify.register(plugin, {
-            query: {
-                schema: testSchema1,
-                graphiql: false,
-            },
-            route: {
-                path: "/graphql",
-            },
-        });
-        await fastify.listen();
-        t.pass("server initialized");
-    } catch (err) {
-        t.error(err);
-    }
-    fastify.server.unref();
-});
-
-test("Initialization with no options", async t => {
-    const fastify = Fastify();
-    try {
-        await fastify.register(plugin);
-        await fastify.listen();
-    } catch (err) {
-        t.ok(err);
-        t.pass("Server uninitialized");
-    }
-    fastify.server.unref();
-});
-
-test("Initialization with invalid options", async t => {
-    const fastify = Fastify();
-    try {
-        await fastify.register(plugin, () => {});
-        await fastify.listen();
-    } catch (err) {
-        t.ok(err);
-        t.pass("Server uninitialized");
-    }
-    fastify.server.unref();
-});
-
-test("Initialization with no query", async t => {
-    const fastify = Fastify();
-    try {
-        await fastify.register(plugin, {
+        },
+    },
+    {
+        name: "valid option without graphiql",
+        options: {
             query: {
                 schema: testSchema1,
                 graphiql: true,
             },
-        });
-        await fastify.listen();
-    } catch (err) {
-        t.ok(err);
-        t.pass("Server uninitialized");
-    }
-    fastify.server.unref();
-});
-
-test("Initialization with no route", async t => {
-    const fastify = Fastify();
-    try {
-        await fastify.register(plugin, {
             route: {
                 path: "/graphql",
             },
+        },
+    },
+    {
+        name: "valid option with no route",
+        options: {
+            query: {
+                schema: testSchema1,
+                graphiql: true,
+            },
+        },
+    },
+    {
+        name: "valid option with no route",
+        options: () => ({
+            query: {
+                schema: testSchema1,
+                graphiql: true,
+            },
+        }),
+    },
+];
+
+const invalidOptions = [
+    {
+        name: "empty options",
+        options: undefined,
+    },
+    {
+        name: "null options",
+        options: null,
+    },
+    {
+        name: "invalid options type",
+        options: request => {
+            return request;
+        },
+    },
+    {
+        name: "invalid options type",
+        options: () => "foo",
+    },
+    {
+        name: "invalid options with no query",
+        options: {
+            route: {
+                path: "/graphql",
+            },
+        },
+    },
+];
+
+test("Initialization with good params", async t => {
+    await validOptions.forEach(async testCase => {
+        await t.test(testCase.name, async t => {
+            const fastify = Fastify();
+            try {
+                fastify.register(plugin, testCase.options);
+                await fastify.listen();
+                t.pass("server initialized");
+            } catch (err) {
+                t.error(err);
+            }
+            fastify.server.unref();
         });
-        await fastify.listen();
-    } catch (err) {
-        t.ok(err);
-        t.pass("Server uninitialized");
-    }
-    fastify.server.unref();
+    });
+});
+
+test("Initialization with bad params", async t => {
+    await invalidOptions.forEach(async testCase => {
+        await t.test(testCase.name, async t => {
+            const fastify = Fastify();
+            try {
+                await fastify.register(plugin, testCase.options);
+                await fastify.listen();
+            } catch (err) {
+                t.ok(err);
+                t.pass("Server uninitialized");
+            }
+            fastify.server.unref();
+        });
+    });
 });
 
 test("Response from requests", t => {
-    t.plan(testCases.length + invalidDataTestCases.length + 1);
+    t.plan(validDataTestCases.length + invalidDataTestCases.length + 1);
     const fastify = Fastify();
     fastify.register(plugin, {
         query: {
@@ -158,10 +167,10 @@ test("Response from requests", t => {
             path: "/graphql",
         },
     });
-    fastify.listen(0, function(err) {
+    fastify.listen(0, err => {
         t.error(err);
         const BASE_URL = `http://localhost:${fastify.server.address().port}`;
-        testCases.forEach(function(testCase) {
+        validDataTestCases.forEach(testCase => {
             t.test(testCase.name, t => {
                 t.plan(1);
                 request(`${BASE_URL}${testCase.url}`, testCase.query)

@@ -10,11 +10,16 @@ const renderGraphiQL = require("./graphiql");
 const accepts = require("accepts");
 
 /**
- * Define helper: get options = require(object/function
+ * Define helper: get options = require(object)
  */
-const getOptions = async (options, request) => {
+const getOptions = async (options, request, logUtil) => {
     // Get options
+    // options can also be a function that would return a configuration object based on request
     const optionsData = await Promise.resolve(typeof options === "function" ? options(request) : options);
+    if (typeof optionsData !== "object") {
+        logUtil.error("Invalid option type");
+        return {};
+    }
     return optionsData;
 };
 
@@ -163,7 +168,7 @@ const handler = (options = {}, logUtil) => async (request, reply) => {
             graphiql,
             formatError: customFormatError,
             validationRules: additionalValidationRules,
-        } = await getOptions(options, request);
+        } = await getOptions(options, request, logUtil);
 
         let validationRules = specifiedRules;
         if (additionalValidationRules) {
@@ -229,7 +234,7 @@ const handler = (options = {}, logUtil) => async (request, reply) => {
             const errors = error.data || [error];
             reply.code(statusCode).send({ errors: errors.map(errorFormatter) });
         } else {
-            logUtil.error(error)
+            logUtil.error(error);
         }
     }
 };
@@ -237,13 +242,11 @@ const handler = (options = {}, logUtil) => async (request, reply) => {
 /**
  * Define plugin
  */
-function register(fastify, options = {}, next) {
+function register(fastify, options, next) {
     let { route, query } = options;
     const logUtil = fastify.log;
 
     if (!route) {
-        // logUtil.error("Invalid Configuration");
-        // throw new Error("Route or Query not provided");
         route = { path: "/graphql" };
     }
 
