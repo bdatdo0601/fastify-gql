@@ -1,6 +1,7 @@
 # fastify-gql-plugin
 
 [![Build Status](https://travis-ci.org/bdatdo0601/fastify-gql-plugin.svg?branch=master)](https://travis-ci.org/bdatdo0601/fastify-gql-plugin)
+[![Coverage Status](https://coveralls.io/repos/github/bdatdo0601/fastify-gql-plugin/badge.svg?branch=master)](https://coveralls.io/github/bdatdo0601/fastify-gql-plugin?branch=master)
 
 A GraphQL plugins based on [Hapi-graphql-2](https://github.com/skarpdev/hapi-graphql-2) and [Express-graphql](https://github.com/graphql/express-graphql)
 
