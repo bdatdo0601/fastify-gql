@@ -12,7 +12,8 @@
     "lint": "prettier --config ./.prettierrc ./*.js ./*.test.js",
     "unit": "tap index.test.js",
     "test": "npm run unit",
-    "coverage": "tap index.test.js --cov --coverage-report=text-lcov --coverage-report=html"
+    "coverage": "tap index.test.js --cov --coverage-report=text-lcov --coverage-report=html",
+    "coveralls": "tap test.js --cov --coverage-report=text-lcov | coveralls"
   },
   "devDependencies": {
     "coveralls": "^3.0.2",
@@ -20,6 +21,7 @@
     "graphql-import": "^0.7.1",
     "graphql-request": "^1.8.2",
     "graphql-tools": "^4.0.0",
+    "nyc": "^13.0.1",
     "path": "^0.12.7",
     "pre-commit": "^1.2.2",
     "prettier": "^1.14.3",

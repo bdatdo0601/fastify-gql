@@ -229,7 +229,7 @@ const handler = (options = {}, logUtil) => async (request, reply) => {
             const errors = error.data || [error];
             reply.code(statusCode).send({ errors: errors.map(errorFormatter) });
         } else {
-            console.error(error);
+            logUtil.error(error)
         }
     }
 };
